@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { selectUser, selectUserbyId, insertUser, updateUser, deleteUserbyId, insertClass, updateClass, selectClass, selectClassbyId, deleteClassbyId, selectStudent, selectStudentbyId, insertStudent, updateStudent, deleteStudentbyId, createTableStudents, createTableRegistro, selectRegister, selectRegisterbyId, insertRegister, updateRegister, deleteRegisterbyId, selectTurma, selectTurmabyId, insertTurma, updateTurma, deleteTurmabyId } from './Controler/Class.js';
+import { selectUser, selectUserbyId, insertUser, updateUser, deleteUserbyId, insertClass, updateClass, selectClass, selectClassbyId, deleteClassbyId, selectStudent, selectStudentbyId, insertStudent, updateStudent, deleteStudentbyId, createTableStudents, createTableRegistro, selectRegister, selectRegisterbyId, insertRegister, updateRegister, deleteRegisterbyId, selectTurma, selectTurmabyId, insertTurma, updateTurma, deleteTurmabyId, insertLogin, selectLogin } from './Controler/Class.js';
 
 const router = Router();
 
@@ -9,6 +9,7 @@ router.get('/', (req, res)=>{
         "msg": "Api Rodando"
     })
 })
+
 //usuarios
 router.get('/users', selectUser);
 router.get('/user', selectUserbyId);
@@ -39,7 +40,9 @@ router.get('/register', selectRegisterbyId);
 router.post('/register', insertRegister);
 router.put('/register', updateRegister);
 router.delete('/register', deleteRegisterbyId);
-
+//login
+router.post('/login', insertLogin);
+router.get('/login', selectLogin);
 
 
 

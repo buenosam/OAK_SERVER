@@ -27,7 +27,10 @@ export  async function selectUserbyId(req, res){
    openDb().then(db=>{
         db.get('SELECT * FROM usuarios WHERE id=?', [id])
         .then(user=>  res.json(user)  );
-    });  
+    });
+    res.json({
+        "statusCode":404
+    })  
 }
 
 export  async function insertUser(req, res){
@@ -58,6 +61,9 @@ export  async function deleteUserbyId(req, res){
     }); 
     res.json({
         "statusCode":200
+    })
+    res.json({
+        "statusCode":404
     }) 
 }
 
@@ -91,7 +97,10 @@ export  async function selectClassbyId(req, res){
    openDb().then(db=>{
         db.get('SELECT * FROM salas WHERE id=?', [id])
         .then(classes=>  res.json(classes));
-    });  
+    });
+    res.json({
+        "statusCode":404
+    })
 }
 
 export  async function insertClass(req, res){
@@ -122,7 +131,10 @@ export  async function deleteClassbyId(req, res){
     }); 
     res.json({
         "statusCode":200
-    }) 
+    })
+    res.json({
+        "statusCode":404
+    })
 }
 
 
@@ -164,7 +176,10 @@ export  async function selectTurmabyId(req, res){
    openDb().then(db=>{
         db.get('SELECT * FROM turmas WHERE id=?', [id])
         .then(class_group=>  res.json(class_group)  );
-    });  
+    });
+    res.json({
+        "statusCode":404
+    })
 }
 
 export  async function insertTurma(req, res){
@@ -195,6 +210,9 @@ export  async function deleteTurmabyId(req, res){
     }); 
     res.json({
         "statusCode":200
+    })
+    res.json({
+        "statusCode":404
     }) 
 }
 
@@ -235,7 +253,10 @@ export  async function selectStudentbyId(req, res){
    openDb().then(db=>{
         db.get('SELECT * FROM alunos WHERE id=?', [id])
         .then(student=>  res.json(student)  );
-    });  
+    });
+    res.json({
+        "statusCode":404
+    })  
 }
 
 export  async function insertStudent(req, res){
@@ -266,6 +287,9 @@ export  async function deleteStudentbyId(req, res){
     }); 
     res.json({
         "statusCode":200
+    })
+    res.json({
+        "statusCode":404
     }) 
 }
 
@@ -300,7 +324,10 @@ export  async function selectRegisterbyId(req, res){
    openDb().then(db=>{
         db.get('SELECT * FROM registros WHERE id=?', [id])
         .then(register=>  res.json(register)  );
-    });  
+    });
+    res.json({
+        "statusCode":404
+    })  
 }
 
 export  async function insertRegister(req, res){
@@ -331,6 +358,42 @@ export  async function deleteRegisterbyId(req, res){
     }); 
     res.json({
         "statusCode":200
-    }) 
+    })
+    res.json({
+        "statusCode":404
+    })
 }
 
+
+
+///////////////////////////////////////////////////LOGINS ABAIXOOOO V V V V V V 
+
+
+export  async function insertLogin(req, res){
+    let usuarios = req.body;
+    openDb().then(db=>{
+        db.run('INSERT INTO usuarios (nome_usuario, senha, tipo_usuario) VALUES (?,?,?)', [usuarios.nome_usuario, usuarios.senha, usuarios.tipo_usuario])
+        .then(login=>  res.json(login));
+    });
+    res.json({
+        "statusCode":200
+    })
+    res.json({
+        "statusCode":404
+    })
+}
+
+
+export  async function selectLogin(req, res){
+    let usuarios = req.body;
+    openDb().then(db=>{
+        db.run('SELECT * FROM Usuarios WHERE nome_usuario=?, senha=?', [usuarios.nome_usuario, usuarios.senha])
+        .then(login=>  res.json(login));
+    });
+    res.json({
+        "statusCode":200
+    })
+    res.json({
+        "statusCode":404
+    })
+}
