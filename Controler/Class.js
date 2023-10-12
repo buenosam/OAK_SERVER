@@ -43,7 +43,7 @@ export  async function insertUser(req, res){
 export  async function updateUser(req, res){
     let usuarios = req.body;
     openDb().then(db=>{
-        db.run('UPDATE usuarios SET nome_usuario=? senha=? tipo_usuario=? WHERE id=?', [usuarios.nome_turma, usuarios.ano_letivo, usuarios.periodo, usuarios.id])
+        db.run('UPDATE usuarios SET nome_usuario=?, senha=?, tipo_usuario=? WHERE id=?', [usuarios.nome_usuario, usuarios.senha, usuarios.tipo_usuario, usuarios.id])
     });
     res.json({
         "statusCode":200

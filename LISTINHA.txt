@@ -14,7 +14,7 @@ CREATE TABLE usuarios (
     tipo_usuario ENUM('aluno', 'admin') NOT NULL
 );
 
-
+xxxxxxxxxxxxxxxxxxxxxxxx
 CREATE TABLE salas (
     id INT PRIMARY KEY AUTO_INCREMENT,
     numero_sala INT NOT NULL,
