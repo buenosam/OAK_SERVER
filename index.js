@@ -29,6 +29,10 @@ createTableStudents();
 createTableRegistro();
 
 app.use(router);
+
+
+//EU AQUI Ó EU HAHAHA EUUUUUUUU
+
 //app.get('/', (req, res) => {
 //  res.send('Hello World!')
 //})
