@@ -2,9 +2,10 @@
 //import { createTable, insertClass, updateClass, selectClass, selectClassbyId, deleteClassbyId } from './Controler/Class.js';
 
 import express from 'express';
+import router from './routes.js';
+import { createTableClass, createTableRegistro, createTableStudents, createTableTurma, createTableUsers } from './Controler/Class.js';
 const app = express();
 const port = 3000;
-
 
 app.use(express.json());
 
@@ -13,40 +14,27 @@ app.use(function (req, res, next) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
   res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
+  next();
 });
-
-import router from './routes.js';
-
 
 //////////////TABELAS ABAIXOOOOO V V V V V V V V V 
 
 //TABELA usuarios
 createTableUsers();
-import { createTableUsers } from './Controler/Class.js';
-app.use(router);
 
 //TABELA classes
 createTableClass();
-import { createTableClass } from './Controler/Class.js';
-app.use(router);
 
 //TABELA turmas
 createTableTurma();
-import { createTableTurma } from './Controler/Class.js';
-app.use(router);
 
 //TABLEA alunos
 createTableStudents();
-import { createTableStudents } from './Controler/Class.js';
-app.use(router);
 
 //TABELA registros
 createTableRegistro();
-import { createTableRegistro } from './Controler/Class.js';
+
 app.use(router);
-
-
 //app.get('/', (req, res) => {
 //  res.send('Hello World!')
 //})

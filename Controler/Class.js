@@ -137,6 +137,7 @@ export async function createTableTurma(){
             nome_turma VARCHAR(12) NOT NULL,
             periodo VARCHAR(10) CHECK (periodo IN ('matutino', 'vespertino', 'noturno')) NOT NULL,
             sala_id INT,
+            ano_letivo INT,
             FOREIGN KEY (sala_id) REFERENCES salas(id)
         );`)
 });
@@ -145,7 +146,9 @@ export async function createTableTurma(){
 export  async function selectTurma(req, res){
     openDb().then(db=>{
          db.all('SELECT * FROM turmas')
-        .then(rooms=>  res.json(rooms))
+        .then(class_groups=>  {
+            res.json(class_groups)
+        })
     });
 }
 export  async function selectTurmabyId(req, res){

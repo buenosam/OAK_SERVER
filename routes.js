@@ -22,11 +22,11 @@ router.post('/classes', insertClass);
 router.put('/classes', updateClass);
 router.delete('/classes', deleteClassbyId);
 //turma
-router.get('/rooms', selectTurma);
-router.get('/room', selectTurmabyId);
-router.post('/room', insertTurma);
-router.put('/room', updateTurma);
-router.delete('/room', deleteTurmabyId);
+router.get('/class_groups', selectTurma);
+router.get('/class_group', selectTurmabyId);
+router.post('/class_group', insertTurma);
+router.put('/class_group', updateTurma);
+router.delete('/class_group', deleteTurmabyId);
 //aluno
 router.get('/students', selectStudent);
 router.get('/student', selectStudentbyId);
