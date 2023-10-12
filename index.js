@@ -3,19 +3,13 @@
 
 import express from 'express';
 import router from './routes.js';
+import cors from 'cors'
 import { createTableClass, createTableRegistro, createTableStudents, createTableTurma, createTableUsers } from './Controler/Class.js';
 const app = express();
 const port = 3000;
 
 app.use(express.json());
-
-app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
+app.use(cors())
 
 //////////////TABELAS ABAIXOOOOO V V V V V V V V V 
 

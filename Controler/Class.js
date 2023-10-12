@@ -4,10 +4,11 @@ import { openDb } from "../configDB.js";
 
 export async function createTableUsers(){
     openDb().then(db=>{
-        db.exec(`CREATE TABLE IF NOT EXISTS turmas (
+        db.exec(`CREATE TABLE
+        IF NOT EXISTS usuarios (
             id INTEGER PRIMARY KEY,
-            nome_usuario VARCHAR(48) NOT NULL,
-            senha VARCHAR(128) NOT NULL,
+            nome_usuario TEXT NOT NULL,
+            senha TEXT NOT NULL,
             tipo_usuario TEXT CHECK(
                 tipo_usuario IN ('aluno', 'admin')
             ) NOT NULL
@@ -132,10 +133,17 @@ export  async function deleteClassbyId(req, res){
 
 export async function createTableTurma(){
     openDb().then(db=>{
-        db.exec(`CREATE TABLE IF NOT EXISTS turmas (
+        db.exec(`CREATE TABLE
+        IF NOT EXISTS turmas (
             id INTEGER PRIMARY KEY,
-            nome_turma VARCHAR(12) NOT NULL,
-            periodo VARCHAR(10) CHECK (periodo IN ('matutino', 'vespertino', 'noturno')) NOT NULL,
+            nome_turma TEXT NOT NULL,
+            periodo TEXT CHECK (
+                periodo IN (
+                    'matutino',
+                    'vespertino',
+                    'noturno'
+                )
+            ) NOT NULL,
             sala_id INT,
             ano_letivo INT,
             FOREIGN KEY (sala_id) REFERENCES salas(id)
@@ -145,7 +153,7 @@ export async function createTableTurma(){
 
 export  async function selectTurma(req, res){
     openDb().then(db=>{
-         db.all('SELECT * FROM turmas')
+         db.all('SELECT * FROM turmas ORDER BY nome_turma ASC')
         .then(class_groups=>  {
             res.json(class_groups)
         })
@@ -160,9 +168,9 @@ export  async function selectTurmabyId(req, res){
 }
 
 export  async function insertTurma(req, res){
-    let Turma = req.body;
+    let turma = req.body;
     openDb().then(db=>{
-        db.run('INSERT INTO turmas (nome_turma, ano_letivo, periodo, sala_id ) VALUES (?,?,?,?)', [turmas.nome_turma, turmas.ano_letivo, turmas.periodo, turmas.sala_id])
+        db.run('INSERT INTO turmas (nome_turma, ano_letivo, periodo, sala_id ) VALUES (?,?,?,?)', [turma.nome_turma, turma.ano_letivo, turma.periodo, turma.sala_id])
     });
     res.json({
         "statusCode":200
