@@ -31,7 +31,7 @@ export  async function selectUserbyId(req, res){
 }
 
 export  async function insertUser(req, res){
-    let Turma = req.body;
+    let usuarios = req.body;
     openDb().then(db=>{
         db.run('INSERT INTO usuarios (nome_usuario, senha, tipo_usuario) VALUES (?,?,?)', [usuarios.nome_usuario, usuarios.senha, usuarios.tipo_usuario])
     });
@@ -41,7 +41,7 @@ export  async function insertUser(req, res){
 }
 
 export  async function updateUser(req, res){
-    let Turma = req.body;
+    let usuarios = req.body;
     openDb().then(db=>{
         db.run('UPDATE usuarios SET nome_usuario=? senha=? tipo_usuario=? WHERE id=?', [usuarios.nome_turma, usuarios.ano_letivo, usuarios.periodo, usuarios.id])
     });
@@ -83,7 +83,7 @@ export async function createTableClass(){
 export  async function selectClass(req, res){
     openDb().then(db=>{
          db.all('SELECT * FROM salas')
-        .then(classes_=>  res.json(classes_))
+        .then(classes_groups=>  res.json(classes_groups))
     });
 }
 export  async function selectClassbyId(req, res){
@@ -95,7 +95,7 @@ export  async function selectClassbyId(req, res){
 }
 
 export  async function insertClass(req, res){
-    let Turma = req.body;
+    let salas = req.body;
     openDb().then(db=>{
         db.run('INSERT INTO salas (numero_sala, capacidade, tipo_sala, andar_sala) VALUES (?,?,?,?)', [salas.numero_sala, salas.capacidade, salas.tipo_sala, salas.andar_sala])
     });
@@ -105,9 +105,9 @@ export  async function insertClass(req, res){
 }
 
 export  async function updateClass(req, res){
-    let Turma = req.body;
+    let salas = req.body;
     openDb().then(db=>{
-        db.run('UPDATE salas SET numero_sala=? capacidade=? tipo_sala=? andar_sala=? WHERE id=?', [salas.numero_sala, salas.capacidade, salas.tipo_sala, salas.andar_sala, salas.id])
+        db.run('UPDATE salas SET numero_sala=?, capacidade=?, tipo_sala=?, andar_sala=? WHERE id=?', [salas.numero_sala, salas.capacidade, salas.tipo_sala, salas.andar_sala, salas.id])
     });
     res.json({
         "statusCode":200
@@ -163,14 +163,14 @@ export  async function selectTurmabyId(req, res){
     let id = req.body.id;
    openDb().then(db=>{
         db.get('SELECT * FROM turmas WHERE id=?', [id])
-        .then(room=>  res.json(room)  );
+        .then(class_group=>  res.json(class_group)  );
     });  
 }
 
 export  async function insertTurma(req, res){
-    let turma = req.body;
+    let turmas = req.body;
     openDb().then(db=>{
-        db.run('INSERT INTO turmas (nome_turma, ano_letivo, periodo, sala_id ) VALUES (?,?,?,?)', [turma.nome_turma, turma.ano_letivo, turma.periodo, turma.sala_id])
+        db.run('INSERT INTO turmas (nome_turma, ano_letivo, periodo, sala_id ) VALUES (?,?,?,?)', [turmas.nome_turma, turmas.ano_letivo, turmas.periodo, turmas.sala_id])
     });
     res.json({
         "statusCode":200
@@ -178,9 +178,9 @@ export  async function insertTurma(req, res){
 }
 
 export  async function updateTurma(req, res){
-    let Turma = req.body;
+    let turmas = req.body;
     openDb().then(db=>{
-        db.run('UPDATE turmas SET nome_turma=? ano_letivo=? periodo=? sala_id=? WHERE id=?', [turmas.nome_turma, turmas.ano_letivo, turmas.periodo, turmas.sala_id, turmas.id])
+        db.run('UPDATE turmas SET nome_turma=?, ano_letivo=?, periodo=?, sala_id=? WHERE id=?', [turmas.nome_turma, turmas.ano_letivo, turmas.periodo, turmas.sala_id, turmas.id])
     });
     res.json({
         "statusCode":200
@@ -191,7 +191,7 @@ export  async function deleteTurmabyId(req, res){
     let id = req.body.id;
      openDb().then(db=>{
          db.get('DELETE FROM turmas WHERE id=?', [id])
-        .then(room=>  res.json(room));
+        .then(class_group=>  res.json(class_group));
     }); 
     res.json({
         "statusCode":200
@@ -239,7 +239,7 @@ export  async function selectStudentbyId(req, res){
 }
 
 export  async function insertStudent(req, res){
-    let Turma = req.body;
+    let alunos = req.body;
     openDb().then(db=>{
         db.run('INSERT INTO alunos (rm, nome, turma_id, rg, cpf, telefone, endereco, email, status, usuario_id) VALUES (?,?,?,?,?,?,?,?,?,?)', [alunos.rm, alunos.nome, alunos.turma_id, alunos.rg, alunos.cpf, alunos.telefone, alunos.endereco, alunos.email, alunos.status, alunos.usuario_id])
     });
@@ -249,9 +249,9 @@ export  async function insertStudent(req, res){
 }
 
 export  async function updateStudent(req, res){
-    let Turma = req.body;
+    let alunos = req.body;
     openDb().then(db=>{
-        db.run('UPDATE alunos SET rm=? nome=? turma_id=? rg=? cpf=? telefone=? endereco=? email=? status=? usuario_id=? WHERE id=?', [alunos.rm, alunos.nome, alunos.turma_id, alunos.rg, alunos.cpf, alunos.telefone, alunos.endereco, alunos.email, alunos.status, alunos.usuario_id, alunos.id])
+        db.run('UPDATE alunos SET rm=?, nome=?, turma_id=?, rg=?, cpf=?, telefone=?, endereco=?, email=?, status=?, usuario_id=? WHERE id=?', [alunos.rm, alunos.nome, alunos.turma_id, alunos.rg, alunos.cpf, alunos.telefone, alunos.endereco, alunos.email, alunos.status, alunos.usuario_id, alunos.id])
     });
     res.json({
         "statusCode":200
@@ -304,7 +304,7 @@ export  async function selectRegisterbyId(req, res){
 }
 
 export  async function insertRegister(req, res){
-    let Turma = req.body;
+    let registros = req.body;
     openDb().then(db=>{
         db.run('INSERT INTO registros (aluno_id, horario, entrada_saida, status, justificativa) VALUES (?,?,?,?,?)', [registros.aluno_id, registros.horario, registros.entrada_saida, registros.status, registros.justificativa])
     });
@@ -314,9 +314,9 @@ export  async function insertRegister(req, res){
 }
 
 export  async function updateRegister(req, res){
-    let Turma = req.body;
+    let registros = req.body;
     openDb().then(db=>{
-        db.run('UPDATE registros SET data_Hora=? entrada_Saida=? justificativa=? aluno_id=? WHERE id=?', [registros.aluno_id, registros.horario, registros.entrada_saida, registros.status, registros.justificativa, registros.id ])
+        db.run('UPDATE registros SET aluno_id=?, horario=?, entrada_saida=?, status=?, justificativa=? WHERE id=?', [registros.aluno_id, registros.horario, registros.entrada_saida, registros.status, registros.justificativa, registros.id ])
     });
     res.json({
         "statusCode":200

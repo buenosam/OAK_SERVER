@@ -73,3 +73,13 @@ hoje.getMinutes() // O número de minutos desde a última hora
 hoje.getMonth() // o mês do ano
 hoje.getTime() // O número de milissegundos desde a meia noite de 1° de janeiro de 1970
 hoje.TolocaleString() // A data e hora local em formato de string
+
+
+
+
+1 - aluno loga no app (endpoint /login com POST de usuario e senha)
+2 - Se usuario e senha okay -> retorna dados do aluno
+3 - com dados do aluno ele cria a carteirinha no app
+4 - O QRCode deve ter o RM
+5 - O leitor dde QRCode vai ler o QRCode e enviar o RM pro endpoint (/validate-student-id)
+6 - Se o RM exxistir -> adiciona um registro de entrada ou saída na tabela registros

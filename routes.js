@@ -16,7 +16,7 @@ router.post('/user', insertUser);
 router.put('/user', updateUser);
 router.delete('/user', deleteUserbyId);
 //salas
-router.get('/classes_', selectClass);
+router.get('/classes_groups', selectClass);
 router.get('/classes', selectClassbyId);
 router.post('/classes', insertClass);
 router.put('/classes', updateClass);
