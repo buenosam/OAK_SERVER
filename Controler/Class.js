@@ -244,7 +244,8 @@ export  async function createTableStudents(){
 
 export  async function selectStudent(req, res){
     openDb().then(db=>{
-         db.all('SELECT * FROM alunos')
+        const turma_id = req.query.turma_id
+         db.all('SELECT * FROM alunos WHERE turma_id = ?', [turma_id])
         .then(students=>  res.json(students))
     });
 }
@@ -385,15 +386,20 @@ export  async function insertLogin(req, res){
 
 
 export  async function selectLogin(req, res){
-    let usuarios = req.body;
+    let usuario = req.query;
+
     openDb().then(db=>{
-        db.run('SELECT * FROM Usuarios WHERE nome_usuario=?, senha=?', [usuarios.nome_usuario, usuarios.senha])
-        .then(login=>  res.json(login));
+        db.get('SELECT * FROM usuarios WHERE nome_usuario=? AND senha=?', [usuario.nome_usuario, usuario.senha])
+        .then(login=>  {
+            if(login){
+                res.status(200)
+                res.json({usuario: login.nome_usuario, tipo_usuario: login.tipo_usuario})
+            }else{
+                res.status(403)
+                res.json({mensagem: "Usuário ou senha inválidos."})
+            }
+        });
+    }).catch(() => {
+        res.json({statusCode: 502})
     });
-    res.json({
-        "statusCode":200
-    })
-    res.json({
-        "statusCode":404
-    })
 }
