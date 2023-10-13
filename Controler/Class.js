@@ -58,13 +58,7 @@ export  async function deleteUserbyId(req, res){
      openDb().then(db=>{
          db.get('DELETE FROM usuarios WHERE id=?', [id])
         .then(user=>  res.json(user));
-    }); 
-    res.json({
-        "statusCode":200
-    })
-    res.json({
-        "statusCode":404
-    }) 
+    });
 }
 
 
@@ -128,13 +122,7 @@ export  async function deleteClassbyId(req, res){
      openDb().then(db=>{
          db.get('DELETE FROM salas WHERE id=?', [id])
         .then(classes=>  res.json(classes));
-    }); 
-    res.json({
-        "statusCode":200
-    })
-    res.json({
-        "statusCode":404
-    })
+    });
 }
 
 
@@ -208,12 +196,6 @@ export  async function deleteTurmabyId(req, res){
          db.get('DELETE FROM turmas WHERE id=?', [id])
         .then(class_group=>  res.json(class_group));
     }); 
-    res.json({
-        "statusCode":200
-    })
-    res.json({
-        "statusCode":404
-    }) 
 }
 
 
@@ -283,15 +265,9 @@ export  async function updateStudent(req, res){
 export  async function deleteStudentbyId(req, res){
     let id = req.body.id;
      openDb().then(db=>{
-         db.get('DELETE FROM alunos WHERE id=?', [id])
+         db.run('DELETE FROM alunos WHERE id=?', [id])
         .then(student=>  res.json(student));
     }); 
-    res.json({
-        "statusCode":200
-    })
-    res.json({
-        "statusCode":404
-    }) 
 }
 
 
@@ -356,13 +332,7 @@ export  async function deleteRegisterbyId(req, res){
      openDb().then(db=>{
          db.get('DELETE FROM registros WHERE id=?', [id])
         .then(register=>  res.json(register));
-    }); 
-    res.json({
-        "statusCode":200
-    })
-    res.json({
-        "statusCode":404
-    })
+    });
 }
 
 
