@@ -370,16 +370,37 @@ export  async function deleteRegisterbyId(req, res){
 ///////////////////////////////////////////////////LOGINS ABAIXOOOO V V V V V V 
 
 
+
+//export  async function insertLogin(req, res){
+   // let usuarios = req.body;
+    //openDb().then(db=>{
+    //    db.run('INSERT INTO usuarios (nome_usuario, senha, tipo_usuario) VALUES (?,?,?)', [usuarios.nome_usuario, usuarios.senha, usuarios.tipo_usuario])
+    //    .then(login=>  res.json(login));
+   // });
+   // res.json({
+    //    "statusCode":200
+    //})
+//}
+
 export  async function insertLogin(req, res){
     let usuarios = req.body;
     openDb().then(db=>{
-        db.run('INSERT INTO usuarios (nome_usuario, senha, tipo_usuario) VALUES (?,?,?)', [usuarios.nome_usuario, usuarios.senha, usuarios.tipo_usuario])
-        .then(login=>  res.json(login));
+        db.run('SELECT * FROM usuarios WHERE nome_usuario=? AND senha=?' , [usuarios.nome_usuario, usuarios.senha, usuarios.tipo_usuario])
+        .then(login=>  {
+            if(nome_usuario = !"", senha = !"", tipo_usuario = !"" ){
+                db.run('INSERT INTO usuarios (nome_usuario, senha, tipo_usuario) VALUES (?,?,?)', [usuarios.nome_usuario, usuarios.senha, usuarios.tipo_usuario])
+                res.status(200)
+                res.json({usuario: login.nome_usuario, tipo_usuario: login.tipo_usuario})
+            }else{
+                res.status(403)
+                res.json({mensagem: "Usuário já cadastrado."})
+            }
+        });
+    }).catch(() => {
+        res.json({statusCode: 502})
     });
-    res.json({
-        "statusCode":200
-    })
 }
+
 
 
 export  async function selectLogin(req, res){
