@@ -105,7 +105,13 @@ export  async function insertClass(req, res){
 export  async function updateClass(req, res){
     let salas = req.body;
     openDb().then(db=>{
-        db.run('UPDATE salas SET numero_sala=?, capacidade=?, tipo_sala=?, andar_sala=? WHERE id=?', [salas.numero_sala, salas.capacidade, salas.tipo_sala, salas.andar_sala, salas.id])
+        db.run('UPDATE salas SET numero_sala=?, capacidade=?, tipo_sala=?, andar_sala=? WHERE id=?', [salas.numero_sala, salas.capacidade, salas.tipo_sala, salas.andar_sala, salas.id]).then(turma =>{
+            res.status(200)
+            res.json({msg:"Sala atualizada com sucesso"})
+        }).catch(error =>{
+            res.status()
+            res.json({msg:"Não foi possivel atualizar a sala"})
+        })
     });
 }
 
@@ -113,7 +119,13 @@ export  async function deleteClassbyId(req, res){
     let id = req.body.id;
      openDb().then(db=>{
          db.get('DELETE FROM salas WHERE id=?', [id])
-        .then(classes=>  res.json(classes));
+        .then(classes=>{
+            res.status(200)
+            res.json({msg:"Sala deletada com sucesso"})
+        }).catch(error =>{
+            res.status()
+            res.json({msg:"Não foi possivel deletar a sala"})
+        })
     });
 }
 
@@ -153,7 +165,7 @@ export  async function selectTurma(req, res){
     });
 }
 export  async function selectTurmabyId(req, res){
-    let id = req.body.id;
+    let id = req.query.id;
    openDb().then(db=>{
         db.get('SELECT * FROM turmas WHERE id=?', [id])
         .then(class_group=>  res.json(class_group)  );
