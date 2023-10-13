@@ -3,13 +3,22 @@
 
 import express from 'express';
 import router from './routes.js';
+import fs from 'fs';
+import https from 'https';
 import cors from 'cors'
+
 import { createTableClass, createTableRegistro, createTableStudents, createTableTurma, createTableUsers } from './Controler/Class.js';
+
 const app = express();
 const port = 3000;
 
+https.createServer({
+    cert: fs.readFileSync('SSL/code.crt'),
+    key: fs.readFileSync('SSL/code.key')
+}, app).listen(3001, () => console.log("Rodando em https"))
+
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 
 //////////////TABELAS ABAIXOOOOO V V V V V V V V V 
 
@@ -31,7 +40,13 @@ createTableRegistro();
 app.use(router);
 
 
-//EU AQUI Ó EU HAHAHA EUUUUUUUU
+
+app.listen(port, () => {
+  console.log(`Api rodando na porta: ${port}`)
+})
+
+
+
 
 //app.get('/', (req, res) => {
 //  res.send('Hello World!')
@@ -72,8 +87,3 @@ app.use(router);
 //   let Turma = await deleteClassbyId(req.body.id);
 //    res.json(Turma);
 //})
-
-
-app.listen(port, () => {
-  console.log(`Api rodando na porta: ${port}`)
-})
