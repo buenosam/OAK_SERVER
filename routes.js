@@ -45,6 +45,7 @@ router.get('/register', selectRegisterbyId);
 router.post('/register', insertRegister);
 router.put('/register', updateRegister);
 router.delete('/register', deleteRegisterbyId);
+
 //login
 /* router.post('/login', insertLogin); */
 

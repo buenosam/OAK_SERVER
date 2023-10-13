@@ -23,7 +23,7 @@ export  async function selectUser(req, res){
     });
 }
 export  async function selectUserbyId(req, res){
-    let id = req.body.id;
+    let id = req.query.id;
    openDb().then(db=>{
         db.get('SELECT * FROM usuarios WHERE id=?', [id])
         .then(user=>  res.json(user)  );
@@ -93,6 +93,10 @@ export  async function selectClassbyId(req, res){
 
 export  async function insertClass(req, res){
     let salas = req.body;
+    if(isNaN(req.body.numero_sala)){
+        res.status(403)
+        res.json({msg:"O numero da sala deve ser um número"})
+    }
     openDb().then(db=>{
         db.run('INSERT INTO salas (numero_sala, capacidade, tipo_sala, andar_sala) VALUES (?,?,?,?)', [salas.numero_sala, salas.capacidade, salas.tipo_sala, salas.andar_sala])
     });
@@ -252,12 +256,19 @@ export  async function insertStudentWithUser(req, res){
             db.run('INSERT INTO usuarios (nome_usuario, senha, tipo_usuario) VALUES (?,?,?)', [alunos.email, alunos.cpf,"aluno"]).then((usuario, e) =>{
                 console.log(usuario)
                 console.log(e)
-                //db.query SELECT id FROM usuarios where nome_usuario=?
-                //db.run('UPDATE alunos SET usuario_id=? WHERE id=?', [usuario.id, aluno.id]);
+                db.query('SELECT id FROM usuarios WHERE nome_usuario=?').then(usuario =>{
+                db.run('UPDATE alunos SET usuario_id=? WHERE id=?', [usuario.id, aluno.id]).then(student =>{
+                    res.status(200)
+                    res.json({msg:"Sucesso!"})
+                })}).catch(error =>{
+                    res.status(405)
+                    res.json({msg:"Não foi possivel realizar a ação"})
+                })
+                })
             })
         })
-    });
-}
+    };
+
 
 export  async function updateStudent(req, res){
     let alunos = req.body;
