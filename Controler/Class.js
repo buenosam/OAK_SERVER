@@ -236,7 +236,15 @@ export async function updateTurma(req, res) {
         turmas.sala_id,
         turmas.id,
       ]
-    );
+    )
+      .then((turma) => {
+        res.status(200);
+        res.json({ msg: "Turma atualizada com sucesso" });
+      })
+      .catch((error) => {
+        res.status(409);
+        res.json({ msg: "Não foi possível atualizar a turma" });
+      });
   });
 }
 
@@ -262,7 +270,7 @@ export async function createTableStudents() {
             cpf VARCHAR(11) NOT NULL UNIQUE,
             telefone VARCHAR(16),
             endereco VARCHAR(128),
-            email VARCHAR(100) NOT NULL,
+            email VARCHAR(100) NOT NULL UNIQUE,
             status BIT NOT NULL,
             usuario_id INT,
             FOREIGN KEY (turma_id) REFERENCES turmas(id),
@@ -303,46 +311,62 @@ export async function insertStudent(req, res) {
   openDb().then((db) => {
     db.run(
       "INSERT INTO alunos (rm, nome, turma_id, rg, cpf, telefone, endereco, email, status, usuario_id) VALUES (?,?,?,?,?,?,?,?,?,?)",
-      [alunos.rm,alunos.nome,alunos.turma_id,,alunos.cpf,alunos.telefone,alunos.endereco,alunos.email,alunos.status,alunos.usuario_id]
-    ).then(banco => {
-        res.status(200)
-        res.json({msg: "Aluno criado com sucesso!"})
-    }).catch(error => {
-        res.status(409)
-        res.json({msg: "Não foi possível criar o aluno"})
-    })
+      [
+        alunos.rm,
+        alunos.nome,
+        alunos.turma_id,
+        ,
+        alunos.cpf,
+        alunos.telefone,
+        alunos.endereco,
+        alunos.email,
+        alunos.status,
+        alunos.usuario_id,
+      ]
+    )
+      .then((banco) => {
+        res.status(200);
+        res.json({ msg: "Aluno criado com sucesso!" });
+      })
+      .catch((error) => {
+        res.status(409);
+        res.json({ msg: "Não foi possível criar o aluno" });
+      });
   });
 }
 
 export async function insertStudentWithUser(req, res) {
-    const alunos = req.body;
-    const db = await openDb();
+  const alunos = req.body;
+  const db = await openDb();
 
-    try {
-        await db.run("BEGIN TRANSACTION");
-        // Inserir o aluno
-        const alunoResult = await db.run(
-            "INSERT INTO alunos (rm, nome, turma_id, rg, cpf, telefone, endereco, email, status, usuario_id) VALUES (?,?,?,?,?,?,?,?,?,?)",
-            [alunos.rm, alunos.nome, alunos.turma_id, alunos.rg, alunos.cpf, alunos.telefone, alunos.endereco, alunos.email, alunos.status, alunos.usuario_id]
-        );
-        // Inserir o usuário
-        const usuarioResult = await db.run(
-            "INSERT INTO usuarios (nome_usuario, senha, tipo_usuario) VALUES (?,?,?)",
-            [alunos.email, alunos.cpf, "aluno"]
-        );
-        // Atualizar o campo "usuario_id" no registro do aluno
-        await db.run("UPDATE alunos SET usuario_id=? WHERE id=?", [usuarioResult.lastID, alunoResult.lastID]);
-        await db.run("COMMIT");
-        res.status(200)
-        res.json({ msg: "Sucesso!" });
-    } catch (error) {
-        await db.run("ROLLBACK");
-        res.status(409)
-        console.log(error)
-        res.json({ msg: "Não foi possível realizar a ação", error });
-    } finally {
-        db.close();
-    }
+  try {
+    await db.run("BEGIN TRANSACTION");
+    // Inserir o aluno
+    const alunoResult = await db.run(
+      "INSERT INTO alunos (rm, nome, turma_id, rg, cpf, telefone, endereco, email, status, usuario_id) VALUES (?,?,?,?,?,?,?,?,?,?)",
+      [alunos.rm,alunos.nome,alunos.turma_id,alunos.rg,alunos.cpf,alunos.telefone,alunos.endereco,alunos.email,alunos.status,alunos.usuario_id,]
+    );
+    // Inserir o usuário
+    const usuarioResult = await db.run(
+      "INSERT INTO usuarios (nome_usuario, senha, tipo_usuario) VALUES (?,?,?)",
+      [alunos.email, alunos.cpf, "aluno"]
+    );
+    // Atualizar o campo "usuario_id" no registro do aluno
+    await db.run("UPDATE alunos SET usuario_id=? WHERE id=?", [
+      usuarioResult.lastID,
+      alunoResult.lastID,
+    ]);
+    await db.run("COMMIT");
+    res.status(200);
+    res.json({ msg: "Sucesso!" });
+  } catch (error) {
+    console.log(error)
+    await db.run("ROLLBACK");
+    res.status(409);
+    res.json({ msg: "Não foi possível realizar a ação", error });
+  } finally {
+    db.close();
+  }
 }
 
 export async function updateStudent(req, res) {
@@ -350,23 +374,14 @@ export async function updateStudent(req, res) {
   openDb().then((db) => {
     db.run(
       "UPDATE alunos SET rm=?, nome=?, turma_id=?, rg=?, cpf=?, telefone=?, endereco=?, email=?, status=?, usuario_id=? WHERE id=?",
-      [
-        alunos.rm,
-        alunos.nome,
-        alunos.turma_id,
-        alunos.rg,
-        alunos.cpf,
-        alunos.telefone,
-        alunos.endereco,
-        alunos.email,
-        alunos.status,
-        alunos.usuario_id,
-        alunos.id,
-      ]
+      [alunos.rm,alunos.nome,alunos.turma_id,alunos.rg,alunos.cpf,alunos.telefone,alunos.endereco,alunos.email,alunos.status,alunos.usuario_id,alunos.id]
     ).then((student) => {
       res.status(200);
       res.json({ msg: "Sucesso!" });
-    });
+    }).catch(() => {
+        res.status(409);
+        res.json({ msg: "Já existe um aluno cadastrado com esses parâmetros" });
+    })
   });
 }
 
@@ -464,19 +479,21 @@ export async function updateRegister(req, res) {
 export async function deleteRegisterbyId(req, res) {
   let id = req.body.id;
   openDb().then((db) => {
-      db.run("DELETE FROM registros WHERE id=?", [id]).then((banco) => {
-            if(banco.changes <= 0){
-                res.status(404);
-                res.json({ msg: "Não foi possível excluir esse registro" });
-            }else{
-                res.status(200);
-                res.json({ msg: "Registro deletado com sucesso!" });
-            }
-        }).catch((error) => {
-            res.status(500)
-            res.json(error)
-        });
-    });
+    db.run("DELETE FROM registros WHERE id=?", [id])
+      .then((banco) => {
+        if (banco.changes <= 0) {
+          res.status(404);
+          res.json({ msg: "Não foi possível excluir esse registro" });
+        } else {
+          res.status(200);
+          res.json({ msg: "Registro deletado com sucesso!" });
+        }
+      })
+      .catch((error) => {
+        res.status(500);
+        res.json(error);
+      });
+  });
 }
 
 ///////////////////////////////////////////////////LOGINS ABAIXOOOO V V V V V V
