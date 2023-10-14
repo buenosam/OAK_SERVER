@@ -46,7 +46,10 @@ export  async function insertUser(req, res){
 export  async function updateUser(req, res){
     let usuarios = req.body;
     openDb().then(db=>{
-        db.run('UPDATE usuarios SET nome_usuario=?, senha=?, tipo_usuario=? WHERE id=?', [usuarios.nome_usuario, usuarios.senha, usuarios.tipo_usuario, usuarios.id])
+        db.run('UPDATE usuarios SET nome_usuario=?, senha=?, tipo_usuario=? WHERE id=?', [usuarios.nome_usuario, usuarios.senha, usuarios.tipo_usuario, usuarios.id]).then(usuario =>{
+            res.status(200);
+            res.json({msg:"Usuario atualizado com sucesso"})
+        })
     });
 }
 
@@ -69,10 +72,11 @@ export async function createTableClass(){
     openDb().then(db=>{
         db.exec(`CREATE TABLE IF NOT EXISTS salas (
             id INTEGER PRIMARY KEY,
-            numero_sala INT NOT NULL UNIQUE,
+            numero_sala INT NOT NULL,
             capacidade INT,
             tipo_sala TEXT CHECK(tipo_sala IN ('sala_de_aula', 'laboratorio', 'biblioteca', 'auditorio')) NOT NULL,
-            andar_sala INT NOT NULL
+            andar_sala INT NOT NULL,
+            UNIQUE (numero_sala)
         );`)
 });
 }
@@ -84,7 +88,7 @@ export  async function selectClass(req, res){
     });
 }
 export  async function selectClassbyId(req, res){
-    let id = req.body.id;
+    let id = req.query.id;
    openDb().then(db=>{
         db.get('SELECT * FROM salas WHERE id=?', [id])
         .then(classes=>  res.json(classes));
@@ -93,12 +97,14 @@ export  async function selectClassbyId(req, res){
 
 export  async function insertClass(req, res){
     let salas = req.body;
-    if(isNaN(req.body.numero_sala)){
-        res.status(403)
-        res.json({msg:"O numero da sala deve ser um número"})
-    }
     openDb().then(db=>{
-        db.run('INSERT INTO salas (numero_sala, capacidade, tipo_sala, andar_sala) VALUES (?,?,?,?)', [salas.numero_sala, salas.capacidade, salas.tipo_sala, salas.andar_sala])
+        db.run('INSERT INTO salas (numero_sala, capacidade, tipo_sala, andar_sala) VALUES (?,?,?,?)', [salas.numero_sala, salas.capacidade, salas.tipo_sala, salas.andar_sala]).then(salas =>{
+            res.status(200)
+            res.json({msg:"Sala inserida com sucesso"})
+        }).catch(error =>{
+            res.status(409)
+            res.json({msg:"Sala já criada"})
+        })
     });
 }
 
