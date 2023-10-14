@@ -85,7 +85,7 @@ export async function createTableClass() {
             capacidade INT,
             tipo_sala TEXT CHECK(tipo_sala IN ('sala_de_aula', 'laboratorio', 'biblioteca', 'auditorio')) NOT NULL,
             andar_sala INT NOT NULL,
-            UNIQUE (numero_sala)
+            UNIQUE (numero_sala,  andar_sala)
         );`);
   });
 }
@@ -107,11 +107,11 @@ export async function selectClassbyId(req, res) {
 }
 
 export async function insertClass(req, res) {
-  let salas = req.body;
+  let sala = req.body;
   openDb().then((db) => {
     db.run(
       "INSERT INTO salas (numero_sala, capacidade, tipo_sala, andar_sala) VALUES (?,?,?,?)",
-      [salas.numero_sala, salas.capacidade, salas.tipo_sala, salas.andar_sala]
+      [sala.numero_sala, sala.capacidade, sala.tipo_sala, sala.andar_sala]
     )
       .then((salas) => {
         res.status(200);
@@ -119,7 +119,9 @@ export async function insertClass(req, res) {
       })
       .catch((error) => {
         res.status(409);
-        res.json({ msg: "Sala já criada" });
+        res.json({
+          msg: `Já existe a sala ${salas.numero_sala} no andar ${salas.andar_sala}`,
+        });
       });
   });
 }
@@ -217,7 +219,7 @@ export async function insertTurma(req, res) {
       })
       .catch((error) => {
         res.status(409);
-        res.json({ msg: "Já existe uma Turma com esses parametros" });
+        res.json({ msg: "Já existe uma turma com esses parâmetros" });
       });
   });
 }
@@ -301,67 +303,46 @@ export async function insertStudent(req, res) {
   openDb().then((db) => {
     db.run(
       "INSERT INTO alunos (rm, nome, turma_id, rg, cpf, telefone, endereco, email, status, usuario_id) VALUES (?,?,?,?,?,?,?,?,?,?)",
-      [
-        alunos.rm,
-        alunos.nome,
-        alunos.turma_id,
-        alunos.rg,
-        alunos.cpf,
-        alunos.telefone,
-        alunos.endereco,
-        alunos.email,
-        alunos.status,
-        alunos.usuario_id,
-      ]
-    );
+      [alunos.rm,alunos.nome,alunos.turma_id,,alunos.cpf,alunos.telefone,alunos.endereco,alunos.email,alunos.status,alunos.usuario_id]
+    ).then(banco => {
+        res.status(200)
+        res.json({msg: "Aluno criado com sucesso!"})
+    }).catch(error => {
+        res.status(409)
+        res.json({msg: "Não foi possível criar o aluno"})
+    })
   });
 }
 
 export async function insertStudentWithUser(req, res) {
-  let alunos = req.body;
-  openDb().then((db) => {
-    db.run(
-      "INSERT INTO alunos (rm, nome, turma_id, rg, cpf, telefone, endereco, email, status, usuario_id) VALUES (?,?,?,?,?,?,?,?,?,?)",
-      [
-        alunos.rm,
-        alunos.nome,
-        alunos.turma_id,
-        alunos.rg,
-        alunos.cpf,
-        alunos.telefone,
-        alunos.endereco,
-        alunos.email,
-        alunos.status,
-        alunos.usuario_id,
-      ]
-    ).then((aluno) => {
-      db.run(
-        "INSERT INTO usuarios (nome_usuario, senha, tipo_usuario) VALUES (?,?,?)",
-        [alunos.email, alunos.cpf, "aluno"]
-      ).then((usuario, e) => {
-        console.log(usuario);
-        console.log(e);
-        db.get(`SELECT id FROM usuarios WHERE nome_usuario = '${alunos.email}'`)
-          .then((usuario) => {
-            console.log(usuario.lastID);
-            console.log(aluno.lastID);
-            console.log(usuario);
-            console.log(aluno);
-            db.run("UPDATE alunos SET usuario_id=? WHERE id=?", [
-              usuario.id,
-              aluno.lastID,
-            ]).then((student) => {
-              res.status(200);
-              res.json({ msg: "Sucesso!" });
-            });
-          })
-          .catch((error) => {
-            res.status(405);
-            res.json({ msg: "Não foi possivel realizar a ação" });
-          });
-      });
-    });
-  });
+    const alunos = req.body;
+    const db = await openDb();
+
+    try {
+        await db.run("BEGIN TRANSACTION");
+        // Inserir o aluno
+        const alunoResult = await db.run(
+            "INSERT INTO alunos (rm, nome, turma_id, rg, cpf, telefone, endereco, email, status, usuario_id) VALUES (?,?,?,?,?,?,?,?,?,?)",
+            [alunos.rm, alunos.nome, alunos.turma_id, alunos.rg, alunos.cpf, alunos.telefone, alunos.endereco, alunos.email, alunos.status, alunos.usuario_id]
+        );
+        // Inserir o usuário
+        const usuarioResult = await db.run(
+            "INSERT INTO usuarios (nome_usuario, senha, tipo_usuario) VALUES (?,?,?)",
+            [alunos.email, alunos.cpf, "aluno"]
+        );
+        // Atualizar o campo "usuario_id" no registro do aluno
+        await db.run("UPDATE alunos SET usuario_id=? WHERE id=?", [usuarioResult.lastID, alunoResult.lastID]);
+        await db.run("COMMIT");
+        res.status(200)
+        res.json({ msg: "Sucesso!" });
+    } catch (error) {
+        await db.run("ROLLBACK");
+        res.status(409)
+        console.log(error)
+        res.json({ msg: "Não foi possível realizar a ação", error });
+    } finally {
+        db.close();
+    }
 }
 
 export async function updateStudent(req, res) {
@@ -395,11 +376,10 @@ export async function deleteStudentbyId(req, res) {
     db.get(`SELECT * FROM alunos WHERE alunos.id = ${id}`)
       .then((aluno) => {
         if (aluno) {
-          db.run("DELETE FROM alunos WHERE id=?", [id])
-            .then((student) => {
-              res.status(200);
-              res.json({ msg: "Sucesso!" });
-            })
+          db.run("DELETE FROM alunos WHERE id=?", [id]).then((student) => {
+            res.status(200);
+            res.json({ msg: "Sucesso!" });
+          });
         } else {
           res.status(404);
           res.json({ msg: "Aluno inexistente!" });
@@ -436,8 +416,9 @@ export async function selectRegister(req, res) {
 export async function selectRegisterbyId(req, res) {
   let id = req.query.id;
   openDb().then((db) => {
-    db.get("SELECT * FROM registros WHERE id=?", [id])
-      .then((register) => res.json(register))
+    db.get("SELECT * FROM registros WHERE id=?", [id]).then((register) =>
+      res.json(register)
+    );
   });
 }
 
@@ -453,9 +434,9 @@ export async function insertRegister(req, res) {
         registros.status,
         registros.justificativa,
       ]
-    ).then(register => {
-        res.status(200)
-        res.json({msg:"Registro inserido com sucesso!"})
+    ).then((register) => {
+      res.status(200);
+      res.json({ msg: "Registro inserido com sucesso!" });
     });
   });
 }
@@ -473,9 +454,9 @@ export async function updateRegister(req, res) {
         registros.justificativa,
         registros.id,
       ]
-    ).then(register => {
-        res.status(200)
-        res.json({msg:"Registro atualizado com sucesso!"})
+    ).then((register) => {
+      res.status(200);
+      res.json({ msg: "Registro atualizado com sucesso!" });
     });
   });
 }
@@ -483,17 +464,19 @@ export async function updateRegister(req, res) {
 export async function deleteRegisterbyId(req, res) {
   let id = req.body.id;
   openDb().then((db) => {
-    db.run("DELETE FROM registros WHERE id=?", [id]).then(register =>{
-        res.status(200)
-        res.json({msg:"Registro deletado com sucesso!"})
-    }).catch(error => {
-        res.status(404)
-        res.json({msg:"Este registro não existe!"})
+      db.run("DELETE FROM registros WHERE id=?", [id]).then((banco) => {
+            if(banco.changes <= 0){
+                res.status(404);
+                res.json({ msg: "Não foi possível excluir esse registro" });
+            }else{
+                res.status(200);
+                res.json({ msg: "Registro deletado com sucesso!" });
+            }
+        }).catch((error) => {
+            res.status(500)
+            res.json(error)
+        });
     });
-  }).catch(error => {
-    res.status(500)
-    res.json({msg: "SERVIDOR MORREU FAMILIA"})
-  })
 }
 
 ///////////////////////////////////////////////////LOGINS ABAIXOOOO V V V V V V
